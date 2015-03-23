@@ -22,8 +22,8 @@ public class ConnectionHandler implements Runnable, MessageListener{
         this.clientNumber = clientNumber;
 
         try{
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
+            InputStream inputStream = socket.getInputStream(); // BufferedReader
+            OutputStream outputStream = socket.getOutputStream(); // BufferedWriter
 
             this.dataInputStream = new DataInputStream(inputStream);
             this.dataOutputStream = new DataOutputStream(outputStream);
@@ -44,7 +44,7 @@ public class ConnectionHandler implements Runnable, MessageListener{
            String line = null;
 
             while (true){
-                line = this.dataInputStream.readUTF(); // Событие!!!
+                line = this.dataInputStream.readUTF();
                 if(line.toLowerCase().equals("exit")){
                     break;
                 }
