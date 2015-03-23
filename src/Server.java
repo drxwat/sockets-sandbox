@@ -51,7 +51,7 @@ public class Server {
     public void fireMessage(ConnectionHandler source, String message){
         MessageEvent messageEvent = new MessageEvent(source, message);
         for(MessageListener listener :  this.getMessageListeners()){
-            listener.messageReceived(messageEvent, source.getClientNumber());
+            listener.messageReceived(messageEvent);
         }
     }
 

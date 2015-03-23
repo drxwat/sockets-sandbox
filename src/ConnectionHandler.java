@@ -40,6 +40,7 @@ public class ConnectionHandler implements Runnable, MessageListener{
     public void run() {
        try{
 
+           server.fireMessage(this, "Клиент #" + this.clientNumber + " присоединился к беседе");
            String line = null;
 
             while (true){
@@ -47,7 +48,7 @@ public class ConnectionHandler implements Runnable, MessageListener{
                 if(line.toLowerCase().equals("exit")){
                     break;
                 }
-                server.fireMessage(this, line);
+                server.fireMessage(this, "#" + this.clientNumber + " " + line);
             }
            socket.shutdownOutput();
            socket.shutdownInput();
@@ -61,11 +62,10 @@ public class ConnectionHandler implements Runnable, MessageListener{
 
     }
 
-
     @Override
-    public void messageReceived(MessageEvent messageEvent, int clientNumber) {
+    public void messageReceived(MessageEvent messageEvent) {
         try{
-            this.dataOutputStream.writeUTF("#" + clientNumber + " " + messageEvent.getMessage());
+            this.dataOutputStream.writeUTF(messageEvent.getMessage());
             this.dataOutputStream.flush();
         }catch (IOException e){
             e.printStackTrace();
