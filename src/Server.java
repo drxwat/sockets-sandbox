@@ -23,7 +23,7 @@ public class Server extends ServerAbstract{
             while (true){
                 Socket socket = serverSocket.accept();
                 System.out.println("Клиент #"+ clientNumber + " присоединился!");
-                ConnectionHandler connectionHandler = new ConnectionHandler(this, socket, clientNumber);
+                ConnectionHandlerNio connectionHandler = new ConnectionHandlerNio(this, socket, clientNumber);
                 addMessageListener(connectionHandler);
                 clientNumber++;
             }
