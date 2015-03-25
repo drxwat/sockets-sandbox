@@ -9,7 +9,7 @@ import java.nio.channels.SocketChannel;
 public class ConnectionHandlerNio implements Runnable, MessageListener{
 
 
-    private Server server = null;
+    private ServerAbstract server = null;
     private Socket socket = null;
     private int clientNumber = 1;
     private ByteBuffer buffer = null;
@@ -18,7 +18,7 @@ public class ConnectionHandlerNio implements Runnable, MessageListener{
         return clientNumber;
     }
 
-    public ConnectionHandlerNio(Server server, Socket socket, int clientNumber){
+    public ConnectionHandlerNio(ServerAbstract server, Socket socket, int clientNumber){
         this.server = server;
         this.socket = socket;
         this.clientNumber = clientNumber;
@@ -33,23 +33,24 @@ public class ConnectionHandlerNio implements Runnable, MessageListener{
 
 
         try(SocketChannel socketChannel = socket.getChannel()){
+            System.out.println(socketChannel);
             //server.fireMessage(this, "Клиент #" + this.clientNumber + " присоединился к беседе");
-            String line = null;
-
-
-            ByteBuffer buffer = ByteBuffer.allocate(256);
-            int byteRead = socketChannel.read(buffer);
-            while (byteRead != 1){
-                buffer.flip();
-
-                while (buffer.hasRemaining()){
-                    //read
-                }
-
-                buffer.clear();
-                byteRead = socketChannel.read(buffer);
-
-            }
+//            String line = null;
+//
+//
+//            ByteBuffer buffer = ByteBuffer.allocate(256);
+//            int byteRead = socketChannel.read(buffer);
+//            while (byteRead != 1){
+//                buffer.flip();
+//
+//                while (buffer.hasRemaining()){
+//                    //read
+//                }
+//
+//                buffer.clear();
+//                byteRead = socketChannel.read(buffer);
+//
+//            }
 /*
 
             do{

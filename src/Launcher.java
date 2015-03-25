@@ -10,26 +10,46 @@ public class Launcher {
             throw new Error("There is no one argument passed to program");
         }
 
-        if(args[0].toLowerCase().equals("server")){
+        String command = args[0].toLowerCase().trim();
 
-            System.out.println("Вы запустили сервер");
-            Server server = new Server(PORT);
-            server.init();
-
-        }else if(args[0].toLowerCase().equals("client-writer")){
-
-            System.out.println("Вы запустили клиент-писатель");
-            Client client = new Client(PORT);
-            client.init();
-
-        }else if(args[0].toLowerCase().equals("client-reader")){
-
-            System.out.println("Вы запустили клиент-читатель");
-            Client client = new Client(PORT, Client.TYPE_READER);
-            client.init();
-
+        if(args.length > 1 && args[1].toLowerCase().trim().equals("nio")){
+            switch (command){
+                case "server":
+                    System.out.println("Вы запустили NIO сервер");
+                    ServerNio serverNio = new ServerNio(PORT);
+                    serverNio.init();
+                    break;
+                case "client-writer":
+                    System.out.println("Вы запустили NIO клиент-писатель");
+                    ClientNio clientNioWriter = new ClientNio(PORT);
+                    clientNioWriter.init();
+                    break;
+                case "client-reader":
+                    System.out.println("Вы запустили NIO клиент-читатель");
+                    break;
+                default:
+                    throw new Error("Passed Invalid arguments");
+            }
         }else{
-            throw new Error("Passed Invalid arguments");
+            switch (command){
+                case "server":
+                    System.out.println("Вы запустили сервер");
+                    Server server = new Server(PORT);
+                    server.init();
+                    break;
+                case "client-writer":
+                    System.out.println("Вы запустили клиент-писатель");
+                    Client clientWriter = new Client(PORT);
+                    clientWriter.init();
+                    break;
+                case "client-reader":
+                    System.out.println("Вы запустили клиент-читатель");
+                    Client clientReader = new Client(PORT, Client.TYPE_READER);
+                    clientReader.init();
+                    break;
+                default:
+                    throw new Error("Passed Invalid arguments");
+            }
         }
     }
 }
