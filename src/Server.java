@@ -7,13 +7,10 @@ import java.util.ArrayList;
  * TODO: Необходимо сделать несколько вариантов работы с вводом выводом: IO NIO NIO2
  * Created by drxwat on 21.03.15.
  */
-public class Server {
+public class Server extends ServerAbstract{
 
-    private int port = 6666; // default port
-    private ArrayList<MessageListener> messageListeners = new ArrayList<MessageListener>();
-
-    public Server(int port){
-        this.port = port;
+    public Server(int port) {
+        super(port);
     }
 
     public void init(){
@@ -26,32 +23,13 @@ public class Server {
             while (true){
                 Socket socket = serverSocket.accept();
                 System.out.println("Клиент #"+ clientNumber + " присоединился!");
-                ConnectionHandler connectionHandler = new ConnectionHandler(this, socket, clientNumber);
+                ConnectionHandlerNio connectionHandler = new ConnectionHandlerNio(this, socket, clientNumber);
                 addMessageListener(connectionHandler);
                 clientNumber++;
             }
 
         }catch (IOException e){
             e.printStackTrace();
-        }
-    }
-
-    public void addMessageListener(MessageListener messageListener){
-        this.messageListeners.add(messageListener);
-    }
-
-    public ArrayList<MessageListener> getMessageListeners(){
-        return this.messageListeners;
-    }
-
-    public void removeMessageListener(MessageListener messageListener){
-        this.messageListeners.remove(messageListener);
-    }
-
-    public void fireMessage(ConnectionHandler source, String message){
-        MessageEvent messageEvent = new MessageEvent(source, message);
-        for(MessageListener listener :  this.getMessageListeners()){
-            listener.messageReceived(messageEvent, source.getClientNumber());
         }
     }
 
