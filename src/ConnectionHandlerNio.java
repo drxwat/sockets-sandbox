@@ -1,7 +1,11 @@
 import java.io.*;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
 
 /**
  * Created by drxwat on 23.03.15.
@@ -30,42 +34,18 @@ public class ConnectionHandlerNio implements Runnable, MessageListener{
 
     @Override
     public void run() {
+        try(SocketChannel channel = socket.getChannel()){
 
+            Charset charset = Charset.forName("UTF-8");
+            ByteBuffer encodedByteBuffer = charset.encode("Hello from a Server!");
+            buffer.clear();
+            buffer.put(encodedByteBuffer);
 
-        try(SocketChannel socketChannel = socket.getChannel()){
-            System.out.println(socketChannel);
-            //server.fireMessage(this, "Клиент #" + this.clientNumber + " присоединился к беседе");
-//            String line = null;
-//
-//
-//            ByteBuffer buffer = ByteBuffer.allocate(256);
-//            int byteRead = socketChannel.read(buffer);
-//            while (byteRead != 1){
-//                buffer.flip();
-//
-//                while (buffer.hasRemaining()){
-//                    //read
-//                }
-//
-//                buffer.clear();
-//                byteRead = socketChannel.read(buffer);
-//
-//            }
-/*
+            buffer.flip();
 
-            do{
-                byteRead = socketChannel.read(buffer);
-                if(byteRead != -1){
-                    line = new String(buffer.array());
-                    server.fireMessage(this, "#" + this.clientNumber + " " + line);
-                }
-            }while (byteRead == -1);
-            socket.shutdownOutput();
-            socket.shutdownInput();
-            socket.close();
-            server.removeMessageListener(this);
-            server.fireMessage(this, "Клиент #" + this.clientNumber + " покинул беседу");
-*/
+            while (buffer.hasRemaining()){
+                channel.write(buffer);
+            }
 
         }catch (IOException e){
             e.printStackTrace();
