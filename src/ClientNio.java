@@ -2,11 +2,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 
 /**
+ *
  * Created by drxwat on 25.03.15.
  */
 public class ClientNio {
