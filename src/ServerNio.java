@@ -15,7 +15,8 @@ public class ServerNio extends ServerAbstract {
 
     @Override
     public void init() {
-        try(ServerSocket serverSocket = ServerSocketChannel.open().socket()){
+        try(ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()){
+            ServerSocket serverSocket = serverSocketChannel.socket();
             serverSocket.bind(new InetSocketAddress(this.port));
 
             int clientNumber = 1;
@@ -23,6 +24,7 @@ public class ServerNio extends ServerAbstract {
                 System.out.println("Ожидаю клиента");
                 Socket socket = serverSocket.accept();
                 System.out.println("Клиент присоединился");
+                // Передаем управление обрабтчику
                 ConnectionHandlerNio connectionHandlerNio = new ConnectionHandlerNio(this, socket, clientNumber);
                 this.addMessageListener(connectionHandlerNio);
                 clientNumber++;

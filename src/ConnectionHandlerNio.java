@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -9,18 +9,20 @@ import java.nio.channels.SocketChannel;
 public class ConnectionHandlerNio implements Runnable, MessageListener{
 
 
-    private ServerAbstract server = null;
+    private ServerNio server = null;
     private Socket socket = null;
     private int clientNumber = 1;
     private ByteBuffer buffer = null;
+    private SocketChannel channel = null;
 
     public int getClientNumber() {
         return clientNumber;
     }
 
-    public ConnectionHandlerNio(ServerAbstract server, Socket socket, int clientNumber){
+    public ConnectionHandlerNio(ServerNio server, Socket socket, int clientNumber){
         this.server = server;
         this.socket = socket;
+        this.channel = this.socket.getChannel();
         this.clientNumber = clientNumber;
         this.buffer = ByteBuffer.allocate(256);
 
@@ -30,61 +32,20 @@ public class ConnectionHandlerNio implements Runnable, MessageListener{
 
     @Override
     public void run() {
-
-
-        try(SocketChannel socketChannel = socket.getChannel()){
-            System.out.println(socketChannel);
-            //server.fireMessage(this, "Клиент #" + this.clientNumber + " присоединился к беседе");
-//            String line = null;
-//
-//
-//            ByteBuffer buffer = ByteBuffer.allocate(256);
-//            int byteRead = socketChannel.read(buffer);
-//            while (byteRead != 1){
-//                buffer.flip();
-//
-//                while (buffer.hasRemaining()){
-//                    //read
-//                }
-//
-//                buffer.clear();
-//                byteRead = socketChannel.read(buffer);
-//
-//            }
-/*
-
-            do{
-                byteRead = socketChannel.read(buffer);
-                if(byteRead != -1){
-                    line = new String(buffer.array());
-                    server.fireMessage(this, "#" + this.clientNumber + " " + line);
-                }
-            }while (byteRead == -1);
-            socket.shutdownOutput();
-            socket.shutdownInput();
-            socket.close();
-            server.removeMessageListener(this);
-            server.fireMessage(this, "Клиент #" + this.clientNumber + " покинул беседу");
-*/
-
-        }catch (IOException e){
+        buffer.flip();
+        try{
+            int byteRead = 0;
+            while (byteRead != -1){
+                channel.read(buffer);
+            }
+            System.out.println(buffer);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void messageReceived(MessageEvent messageEvent) {
-
-        try(SocketChannel socketChannel = this.socket.getChannel()){
-            buffer.clear();
-            buffer.put(messageEvent.getMessage().getBytes());
-            buffer.flip();
-
-            while (buffer.hasRemaining()){
-                socketChannel.write(buffer);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        System.out.println("Message: " + messageEvent.getMessage());
     }
 }
