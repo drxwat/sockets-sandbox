@@ -2,11 +2,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
 /**
+ *
  * Created by drxwat on 25.03.15.
  */
 public class ClientNio {
@@ -21,46 +21,40 @@ public class ClientNio {
         try(
                 SocketChannel   channel = SocketChannel.open();
         ) {
-            // Устанавливаем соединение
-            channel.connect(new InetSocketAddress(this.port));
 
-            System.out.println("Подключение прошло успешно!");
-            System.out.println();
+            channel.connect(new InetSocketAddress(this.port));
+            System.out.println("Connected!");
 
             Charset charset = Charset.forName("UTF-8");
-            ByteBuffer buffer = ByteBuffer.allocate(10);
-
+            ByteBuffer buffer = ByteBuffer.allocate(5);
+            boolean inProgress = false;
             int bytesRead = 0;
-            while (bytesRead != -1) {
+            while (true){
                 bytesRead = channel.read(buffer);
-                if (bytesRead != -1) {
 
-                    buffer.flip();
-
-                    String message = new String(ByteBuffer.allocate(bytesRead).put(buffer).array(), charset);
-                    System.out.print(message);
-
-                    buffer.clear();
-
-                }
-            }
-
-            bytesRead = 0;
-            while (bytesRead != -1){
-                bytesRead = channel.read(buffer);
                 if(bytesRead != -1){
-
+                    inProgress = true;
+                    // В режиме чтения
                     buffer.flip();
 
-                    String message = new String(ByteBuffer.allocate(bytesRead).put(buffer).array(), charset);
-                    System.out.print(message);
+                    byte[] message = new byte[bytesRead];
+
+                    int i = 0;
+                    while (buffer.hasRemaining()){
+                        message[i] = buffer.get();
+                        i++;
+                    }
+                    System.out.print(new String(message, charset));
 
                     buffer.clear();
-
+                }else{
+                    if(inProgress){
+                        // Вставим пробел между пачками
+                        System.out.println();
+                    }
+                    inProgress = false;
                 }
             }
-
-
 
 
         } catch (IOException e) {

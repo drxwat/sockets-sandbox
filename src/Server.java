@@ -1,10 +1,11 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
- * TODO: Необходимо сделать несколько вариантов работы с вводом выводом: IO NIO NIO2
+ * TODO: Реализовать NIO с использованием селекторов\
+ * TODO: Реализовать запись переписки в файл через NIO & IO
+ * TODO: Дополнить логированием весь процесс (изучить логи)
  * Created by drxwat on 21.03.15.
  */
 public class Server extends ServerAbstract{
