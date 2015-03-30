@@ -37,7 +37,8 @@ public class ConnectionHandlerNio implements Runnable, MessageListener{
         try(SocketChannel channel = socket.getChannel()){
 
             Charset charset = Charset.forName("UTF-8");
-            ByteBuffer encodedByteBuffer = charset.encode("Hello from a Server!");
+//            String message = new String("Hello from a Server!".getBytes(), charset);
+            ByteBuffer encodedByteBuffer = charset.encode("Привет от сервера Ё!");
             buffer.clear();
             buffer.put(encodedByteBuffer);
 
@@ -46,6 +47,8 @@ public class ConnectionHandlerNio implements Runnable, MessageListener{
             while (buffer.hasRemaining()){
                 channel.write(buffer);
             }
+            System.out.println("send");
+
 
         }catch (IOException e){
             e.printStackTrace();

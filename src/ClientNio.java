@@ -20,23 +20,48 @@ public class ClientNio {
     public void init(){
         try(
                 SocketChannel   channel = SocketChannel.open();
-                Socket          socket  = channel.socket()
         ) {
+            // Устанавливаем соединение
+            channel.connect(new InetSocketAddress(this.port));
 
-            socket.connect(new InetSocketAddress(this.port));
-            System.out.println("Connected!");
+            System.out.println("Подключение прошло успешно!");
+            System.out.println();
 
-//            Charset charset = Charset.forName("UTF-8");
-            ByteBuffer buffer = ByteBuffer.allocate(256);
-            int bytesRead = channel.read(buffer);
+            Charset charset = Charset.forName("UTF-8");
+            ByteBuffer buffer = ByteBuffer.allocate(10);
 
-            if(bytesRead != -1){
-//               CharBuffer charBuffer = charset.decode(buffer);
-//                System.out.println(charBuffer.length());
-                while (buffer.hasRemaining()){
-                    System.out.print(buffer.getChar());
+            int bytesRead = 0;
+            while (bytesRead != -1) {
+                bytesRead = channel.read(buffer);
+                if (bytesRead != -1) {
+
+                    buffer.flip();
+
+                    String message = new String(ByteBuffer.allocate(bytesRead).put(buffer).array(), charset);
+                    System.out.print(message);
+
+                    buffer.clear();
+
                 }
             }
+
+            bytesRead = 0;
+            while (bytesRead != -1){
+                bytesRead = channel.read(buffer);
+                if(bytesRead != -1){
+
+                    buffer.flip();
+
+                    String message = new String(ByteBuffer.allocate(bytesRead).put(buffer).array(), charset);
+                    System.out.print(message);
+
+                    buffer.clear();
+
+                }
+            }
+
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
