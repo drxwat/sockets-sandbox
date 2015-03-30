@@ -20,10 +20,9 @@ public class ClientNio {
     public void init(){
         try(
                 SocketChannel   channel = SocketChannel.open();
-                Socket          socket  = channel.socket()
         ) {
 
-            socket.connect(new InetSocketAddress(this.port));
+            channel.connect(new InetSocketAddress(this.port));
             System.out.println("Connected!");
 
             Charset charset = Charset.forName("UTF-8");
