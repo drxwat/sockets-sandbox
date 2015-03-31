@@ -3,9 +3,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,9 +11,6 @@ import java.util.Set;
  */
 public class ServerNio extends ServerAbstract {
 
-    private static String clientChannel = "clientChannel";
-    private static String serverChannel = "serverChannel";
-    private static String channelType = "channelType";
     private int maxClients = 150;
 
     public ServerNio(int port) {
@@ -37,9 +32,8 @@ public class ServerNio extends ServerAbstract {
             serverSocketChannel.configureBlocking(false);
 
             SelectionKey serverSocketChannelKey = serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            Map<String, String> keyMap = new HashMap<String, String>();
-            keyMap.put(channelType, serverChannel);
-            serverSocketChannelKey.attach(keyMap);
+            ChannelHandler serverChannelHandler = new ChannelHandler(ChannelHandler.TYPE_SERVER);
+            serverSocketChannelKey.attach(serverChannelHandler);
 
             while (true){
 
@@ -54,9 +48,9 @@ public class ServerNio extends ServerAbstract {
 
                     SelectionKey key = selectionKeyIterator.next();
 
-                    Map<String, String> map = (Map<String, String>)key.attachment();
+                    ChannelHandler channelHandler = (ChannelHandler)key.attachment();
 
-                    if(map.get(channelType).equals(serverChannel)){
+                    if(channelHandler.isServer()){
                         // Устанавливаем соединение с клиентом
                         SocketChannel socketChannel = serverSocketChannel.accept();
                         if(socketChannel == null){
@@ -67,25 +61,46 @@ public class ServerNio extends ServerAbstract {
                         System.out.println("Client is Connected");
                         SelectionKey socketChannelKey = socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 
-                        Map<String, String> socketChannelKeyMap = new HashMap<String, String>();
-                        socketChannelKeyMap.put(channelType, clientChannel);
-                        socketChannelKey.attach(socketChannelKeyMap);
+                        ChannelHandler clientChannelHandler1 = new ChannelHandler(ChannelHandler.TYPE_CLIENT);
+                        socketChannelKey.attach(clientChannelHandler1);
+                        this.addMessageListener(clientChannelHandler1);
 
                     }else{
                         // Работаем с клиентом
                         if(key.isReadable()){
                             System.out.println("Client is Readable");
+
+                            ByteBuffer readBuffer = ByteBuffer.allocate(100);
+                            readBuffer.clear();
+                            readBuffer.flip();
+
+                            SocketChannel clientReaderSocketChannel = (SocketChannel)key.channel();
+                            int bytesRead = clientReaderSocketChannel.read(readBuffer);
+
+                            byte[] readMessage = new byte[bytesRead];
+                            if(bytesRead != -1){
+                                int i = 0;
+                                while (bytesRead != -1){
+                                    readMessage[i] = readBuffer.get();
+                                }
+                                this.fireMessage((MessageListener)key.attachment(), new String(readMessage, Charset.defaultCharset()));
+                            }
+
                         }else if(key.isWritable()){
                             System.out.println("Client is Writable");
 
                             ByteBuffer buffer = ByteBuffer.allocate(100);
                             buffer.clear();
-                            buffer.put(Charset.forName("UTF-8").encode("Hello from Max's Server!"));
+                            ChannelHandler writerChannelHandler1 = (ChannelHandler)key.attachment();
+                            if(writerChannelHandler1.hasMessage()){
 
-                            buffer.flip();
+                                buffer.put(Charset.forName("UTF-8").encode(new String(writerChannelHandler1.getMessage().array(), Charset.defaultCharset())));
+                                buffer.flip();
 
-                            SocketChannel channel = (SocketChannel)key.channel();
-                            channel.write(buffer);
+                                SocketChannel channel = (SocketChannel)key.channel();
+                                channel.write(buffer);
+
+                            }
                         }
                     }
 
@@ -98,7 +113,4 @@ public class ServerNio extends ServerAbstract {
         }
     }
 
-    public void acceptConnection(){
-
-    }
 }

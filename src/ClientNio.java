@@ -1,12 +1,11 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
 /**
- *
+ * TODO: РЕализовать с помощью селекторов возможность писать в канал сокета и чиать из канала консоли
  * Created by drxwat on 25.03.15.
  */
 public class ClientNio {
