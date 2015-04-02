@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
@@ -18,9 +21,12 @@ public class ClientNio {
 
     public void init(){
         try(
+                Selector selector = Selector.open();
                 SocketChannel   channel = SocketChannel.open();
         ) {
 
+            channel.configureBlocking(false);
+            channel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);
             channel.connect(new InetSocketAddress(this.port));
             System.out.println("Connected!");
 

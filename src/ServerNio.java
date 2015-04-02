@@ -11,15 +11,8 @@ import java.util.Set;
  */
 public class ServerNio extends ServerAbstract {
 
-    private int maxClients = 150;
-
     public ServerNio(int port) {
         super(port);
-    }
-
-    public ServerNio(int port, int maxClients){
-        super(port);
-        this.maxClients = maxClients;
     }
 
     @Override
